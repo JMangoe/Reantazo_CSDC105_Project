@@ -17,7 +17,8 @@ const uploadMiddleware = multer({
 });
 
 const salt = bcrypt.genSaltSync(10);
-const secret = 'asdsd12321sfa';
+const secret = process.env.JWT_SECRET;
+const mongoURI = process.env.MONGODB_URI;
 const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
 function requireAuth(req, res, next) {
@@ -39,11 +40,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
-mongoose.connect('mongodb+srv://blog:G4l5yICMLaa3VNOL@cluster0.livteb9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
+mongoose.connect(mongoURI);
 
 app.post('/register', async (req, res) => {
     const {username, password} = req.body;
-    //const existingUser = await User.findOne({ username });
     try {
         const userDoc = await User.create({
             username,
@@ -182,6 +182,7 @@ app.listen(4000);
 //G4l5yICMLaa3VNOL password
 
 //Additional Features:
+
 //delete function
 app.delete('/post/:id', async(req,res) => {
     const { token } = req.cookies;
