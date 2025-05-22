@@ -208,6 +208,7 @@ a svg {
 }
 
 /*added features*/
+/*delete*/
 button.delete-btn {
   background-color: #333;
   display: inline-flex;
@@ -232,6 +233,7 @@ button.delete-btn svg {
   height: 20px;
 }
 
+/*intro page stuff*/
 .intro-page {
   text-align: center;
   padding: 100px 20px;
@@ -255,9 +257,23 @@ button.delete-btn svg {
   border-radius: 5px;
   text-decoration: none;
   font-size: 1rem;
+  opacity: 0;
+  animation: fadeIn 1.2s ease-in forwards;
+  animation-delay: 0.6s;
   transition: background-color 0.2s ease;
 }
 
 .intro-page .btn:hover {
   background-color: #4d4c4c;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1.2s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }
