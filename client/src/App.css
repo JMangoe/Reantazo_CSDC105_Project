@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&family=Merriweather:wght@400;700&family=Manrope:wght@400;600&family=DM+Sans:wght@400;600&family=Cabin:wght@400;700&display=swap');
+
 :root {
   --bg: #ffffff;
   --text: #000000;
@@ -24,7 +26,7 @@ a:hover {
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 img {
@@ -43,6 +45,8 @@ header{
   margin-top: 20px;
   margin-bottom: 50px;
   align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
 }
 
 header a {
@@ -121,7 +125,7 @@ button {
   cursor: pointer;
   width: 100%;
   display: block;
-  background-color: var(--accent);
+  background-color: var(--muted);
   color: var(--text);
   border: none;
   border-radius: 5px;
@@ -131,7 +135,7 @@ button {
 }
 
 button:hover{
-  background-color: #facc15;
+  background-color: var(--border);
 }
 
 form.login h1, form.register h1 {
@@ -257,10 +261,6 @@ button.delete-btn svg {
   border-radius: 5px;
   text-decoration: none;
   font-size: 1rem;
-  opacity: 0;
-  animation: fadeIn 1.2s ease-in forwards;
-  animation-delay: 0.6s;
-  transition: background-color 0.2s ease;
 }
 
 .intro-page .btn:hover {
@@ -276,4 +276,28 @@ button.delete-btn svg {
   to {
     opacity: 1;
   }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 100px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+}
+
+.intro-logo {
+  height: 100px;
+  margin-bottom: 20px;
+  animation: fadeIn 1.5s ease;
 }

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
+import logo from './assets/bro-quote-logo.png';
 
 export default function Header() {
     const {setUserInfo,userInfo} = useContext(UserContext)
@@ -27,7 +28,13 @@ const username = userInfo?.username;
 
     return (
     <header>
-        <Link to="/blogs" className="logo">My Blog</Link>
+        <div className="logo-container">
+            <Link to="/">
+                <img src={logo} alt="BroQuote Logo" className="logo-img" />
+            </Link>
+            <Link to="/blogs" className="logo">All Blogs</Link>
+        </div>
+
         <nav>
             {username && (
                 <>
