@@ -1,13 +1,30 @@
+:root {
+  --bg: #ffffff;
+  --text: #000000;
+  --accent: #eab308;
+  --muted: #9ca3af;
+  --border: #e5e7eb;
+}
+
+
 * {
   box-sizing: border-box;
 }
 
 a {
   cursor: pointer;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 body {
-  color: #222;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
 }
 
 img {
@@ -93,21 +110,28 @@ input {
   display: block;
   margin-bottom: 5px;
   width: 100%;
-  padding: 5px 7px;
-  border: 2px solid #ddd;
-  border-radius: 5px;
-  background-color: #fff;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--bg);
+  color: var(--text)
 }
 
 button {
   cursor: pointer;
   width: 100%;
   display: block;
-  background-color: #555;
-  border: 0;
-  color: #fff;
+  background-color: var(--accent);
+  color: var(--text);
+  border: none;
   border-radius: 5px;
   padding: 7px 0;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+button:hover{
+  background-color: #facc15;
 }
 
 form.login h1, form.register h1 {
@@ -157,6 +181,9 @@ div.post-page div.content p {
 div.edit-row {
   text-align: center;
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
 div.post-page a.edit-btn {
@@ -168,9 +195,69 @@ div.post-page a.edit-btn {
   padding: 15px 30px;
   border-radius: 5px;
   text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+/*added hover*/
+div.post-page a.edit-btn:hover {
+  background-color: #4d4c4c;
 }
 
 a svg {
   height: 20px;
 }
 
+/*added features*/
+button.delete-btn {
+  background-color: #333;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 5px;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  width: fit-content;
+}
+
+button.delete-btn:hover {
+  background-color: #4d4c4c;
+}
+
+button.delete-btn svg {
+  height: 20px;
+}
+
+.intro-page {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.intro-page h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.intro-page p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.intro-page .btn {
+  background-color: #333;
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.intro-page .btn:hover {
+  background-color: #4d4c4c;
+}

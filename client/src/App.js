@@ -10,14 +10,18 @@ import { UserContextProvider } from './UserContext';
 import CreatePost from './pages/CreatePost';
 import Postpage from './pages/PostPage';
 import EditPost from './pages/EditPost';
+import IntroPage from './pages/IntroPage';
 
 
 function App() {
   return (
     <UserContextProvider>
       <Routes>
+
+        <Route path="/" element={<IntroPage />} />
+
         <Route path="/" element={<Layout />}>
-          <Route index element={<IndexPage />} />
+          <Route path="blogs" element={<IndexPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/create" element={<CreatePost />} />
