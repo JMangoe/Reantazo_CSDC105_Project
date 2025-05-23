@@ -17,7 +17,7 @@ export default function RegisterPage() {
         }
     }
         return (
-            <form className="register" onSubmit={register}>
+            <form className="register fade-in" onSubmit={register}>
                 <h1>Register</h1>
                 <input type="text" 
                         placeholder="username" 

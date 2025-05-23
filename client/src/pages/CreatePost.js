@@ -38,7 +38,7 @@ export default function CreatePost() {
     }
 
     return (
-        <form onSubmit={createNewPost}>
+        <form onSubmit={createNewPost} className="fade-in">
             <input type="title" 
                     placeholder={'Title'} 
                     value={title} 

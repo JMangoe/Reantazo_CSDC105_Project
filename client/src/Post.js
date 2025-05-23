@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Post({_id, title, summary, cover, content, createdAt, author, views}) {
     return (
-    <div className="post">
+    <div className="post fade-in">
         <div className="image">
             <Link to={`/post/${_id}`}>
                 <img src={'http://localhost:4000/'+cover} alt=""/>

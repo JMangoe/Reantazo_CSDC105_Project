@@ -53,7 +53,7 @@ export default function Postpage() {
     }
 
     return (
-        <div className="post-page">
+        <div className="post-page fade-in">
             <h1>{postInfo.title}</h1>
             <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
             <div className="author">by @{postInfo.author.username}</div>

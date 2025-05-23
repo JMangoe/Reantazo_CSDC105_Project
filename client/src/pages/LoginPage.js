@@ -31,7 +31,7 @@ export default function LoginPage(){
         return  <Navigate to={'/blogs'} />
     }
     return(
-        <form className="login" onSubmit={login}>
+        <form className="login fade-in" onSubmit={login}>
             <h1>Login</h1>
             <input type="text" 
                 placeholder="username" 

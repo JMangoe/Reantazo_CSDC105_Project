@@ -28,14 +28,14 @@ const username = userInfo?.username;
 
     return (
     <header>
-        <div className="logo-container">
+        <div className="logo-container fade-in">
             <Link to="/">
                 <img src={logo} alt="BroQuote Logo" className="logo-img" />
             </Link>
             <Link to="/blogs" className="logo">All Blogs</Link>
         </div>
 
-        <nav>
+        <nav className="fade-in">
             {username && (
                 <>
                     <span>Welcome, {username} </span>
