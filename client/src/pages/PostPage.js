@@ -1,5 +1,5 @@
 import { formatISO9075 } from "date-fns";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../UserContext";
 
@@ -8,14 +8,28 @@ export default function Postpage() {
     const [postInfo, setPostInfo] = useState(null);
     const {userInfo} = useContext(UserContext);
     const {id} = useParams();
+    const hasCountedView = useRef(false); //view count lock
     useEffect(() => {
-        fetch(`http://localhost:4000/post/${id}`)
-            .then(response => {
-                response.json().then(postInfo => {
-                    setPostInfo(postInfo);
-                })
+        async function fetchPost() {
+        if (!hasCountedView.current) {
+            hasCountedView.current = true;
+
+            //increment view count ONCE
+            await fetch(`http://localhost:4000/post/${id}/view`, {
+            method: "POST",
             });
-    }, []);
+
+            await new Promise((res) => setTimeout(res, 300));
+        }
+
+        //always fetch post info
+        const response = await fetch(`http://localhost:4000/post/${id}`);
+        const postInfo = await response.json();
+        setPostInfo(postInfo);
+        }
+
+        fetchPost();
+    }, [id]); 
 
     if(!postInfo) return '';
 

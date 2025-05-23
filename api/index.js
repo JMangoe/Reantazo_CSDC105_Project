@@ -178,6 +178,16 @@ app.get('/post/:id', async(req, res) => {
     res.json(postDoc);
 })
 
+//checking views
+app.post('/post/:id/view', async (req, res) => {
+    try {
+        await Post.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+        res.status(200).json({ message: "View counted" });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to count view" });
+    }
+});
+
 
 app.listen(4000);
 //G4l5yICMLaa3VNOL password
