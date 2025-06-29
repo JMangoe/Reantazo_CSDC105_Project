@@ -10,6 +10,12 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const multer = require ('multer');
 const fs = require('fs');
+
+const uploadsDir = __dirname + '/uploads';
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+
 const uploadMiddleware = multer({ 
     dest: 'uploads/',
     limits: {
@@ -21,6 +27,10 @@ const salt = bcrypt.genSaltSync(10);
 const secret = process.env.JWT_SECRET;
 const mongoURI = process.env.MONGODB_URI;
 const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+
+app.get('/', (req, res) => {
+    res.send('API is running <3');
+})
 
 function requireAuth(req, res, next) {
     const { token } = req.cookies;
@@ -36,7 +46,7 @@ function requireAuth(req, res, next) {
     })
 }
 
-app.use(cors({credentials:true, origin:'http://localhost:3000'}));
+app.use(cors({credentials:true, origin: ['http://localhost:3000', 'https://your-vercel-app.vercel.app']})); //rename url later
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -189,8 +199,10 @@ app.post('/post/:id/view', async (req, res) => {
 });
 
 
-app.listen(4000);
-//G4l5yICMLaa3VNOL password
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
 
 //Additional Features:
 
