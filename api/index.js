@@ -46,7 +46,11 @@ function requireAuth(req, res, next) {
     })
 }
 
-app.use(cors({credentials:true, origin: ['http://localhost:3000', 'https://reantazo-csdc-105-project.vercel.app/']}));
+app.use(cors({credentials:true, 
+    origin: [
+        'http://localhost:3000', 
+        'https://reantazo-csdc-105-project.vercel.app']
+    }));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -89,7 +93,11 @@ app.post('/login', async (req,res) => {
             console.error(err);
             return res.status(500).json('Internal server error');
         }
-        res.cookie('token', token, { httpOnly: true }).json({
+        res.cookie('token', token, { 
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None'
+        }).json({
             id:userDoc._id,
             username,
         });
