@@ -46,7 +46,7 @@ function requireAuth(req, res, next) {
     })
 }
 
-app.use(cors({credentials:true, origin: ['http://localhost:3000', 'https://your-vercel-app.vercel.app']})); //rename url later
+app.use(cors({credentials:true, origin: ['http://localhost:3000', 'https://reantazo-csdc-105-project.vercel.app/']}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
