@@ -3,6 +3,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../UserContext";
 
+const API = process.env.REACT_APP_API_URL;
+
 export default function Postpage() {
     const navigate = useNavigate();
     const [postInfo, setPostInfo] = useState(null);
@@ -15,7 +17,7 @@ export default function Postpage() {
             hasCountedView.current = true;
 
             //increment view count ONCE
-            await fetch(`http://localhost:4000/post/${id}/view`, {
+            await fetch(`${API}/post/${id}/view`, {
             method: "POST",
             });
 
@@ -23,7 +25,7 @@ export default function Postpage() {
         }
 
         //always fetch post info
-        const response = await fetch(`http://localhost:4000/post/${id}`);
+        const response = await fetch(`${API}/post/${id}`);
         const postInfo = await response.json();
         setPostInfo(postInfo);
         }
@@ -38,7 +40,7 @@ export default function Postpage() {
         const confirmed = window.confirm("Are you sure you want to delete this post?");
         if (!confirmed) return;
 
-        const response = await fetch(`http://localhost:4000/post/${postId}`, {
+        const response = await fetch(`${API}/post/${postId}`, {
             method: 'DELETE',
             credentials: 'include',
         });
@@ -74,7 +76,7 @@ export default function Postpage() {
                 </div>
             )}
             <div className="image">
-                <img src={`http://localhost:4000/${postInfo.cover}`} alt=""/>
+                <img src={`${API}/${postInfo.cover}`} alt=""/>
             </div>
 
             <div className="content" dangerouslySetInnerHTML={{__html:postInfo.content}} />

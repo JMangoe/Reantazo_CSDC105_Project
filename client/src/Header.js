@@ -3,10 +3,12 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import logo from './assets/bro-quote-logo.png';
 
+const API = process.env.REACT_APP_API_URL;
+
 export default function Header() {
     const {setUserInfo,userInfo} = useContext(UserContext)
     useEffect(() => {
-        fetch('http://localhost:4000/profile', {
+        fetch(`${API}/profile`, {
             credentials: 'include', 
         }).then(response => {
             response.json().then(userInfo => {
@@ -16,7 +18,7 @@ export default function Header() {
     }, []);
 
 function logout() {
-    fetch ('http://localhost:4000/logout', {
+    fetch (`${API}/logout`, {
         credentials: 'include',
         method: 'POST',
     });

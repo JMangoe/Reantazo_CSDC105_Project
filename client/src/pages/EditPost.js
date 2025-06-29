@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import Editor from "../Editor";
 
+const API = process.env.REACT_APP_API_URL;
+
 export default function EditPost() {
     const {id} = useParams();
     const [title,setTitle] = useState('');
@@ -11,7 +13,7 @@ export default function EditPost() {
     const [redirect, setRedirect] = useState(false);
 
     useEffect(() => {
-        fetch('http://localhost:4000/post/'+id)
+        fetch(`${API}/post/`+id)
             .then(response => {
                 response.json().then(postInfo => {
                     setTitle(postInfo.title);
@@ -36,7 +38,7 @@ export default function EditPost() {
             alert("Cover photo is required!");
             return;
         }
-        const response = await fetch('http://localhost:4000/post', {
+        const response = await fetch(`${API}/post`, {
             method: 'PUT',
             body: data,
             credentials: 'include',
