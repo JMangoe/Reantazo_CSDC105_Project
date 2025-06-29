@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import Editor from "../Editor";
 
+const API = process.env.REACT_APP_API_URL;
+
 export default function CreatePost() {
     const [title,setTitle] = useState('');
     const [summary,setSummary] = useState('');
@@ -22,7 +24,7 @@ export default function CreatePost() {
             return;
         }
 
-        const response = await fetch('http://localhost:4000/post', {
+        const response = await fetch(`${API}/post`, {
             method: 'POST',
             body: data, 
             credentials: 'include',
