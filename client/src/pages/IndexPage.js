@@ -20,7 +20,7 @@ export default function IndexPage() {
             });
     }, []);
 
-    if (loading) return <div className="text-gray-700 text-center mt-8 font-semibold">Loading posts...</div>;
+    if (loading) return <div style={{ textAlign: "center", marginTop: "2rem", color: "#000000" }}>Loading posts...</div>;
 
     return (
         <>
