@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Post from "../Post";
-import Loading from "../components/Loading";
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -21,7 +20,7 @@ export default function IndexPage() {
             });
     }, []);
 
-    if (loading) return <Loading />;
+    if (loading) return <div style={{ textAlign: "center", marginTop: "2rem", color: "#3B82F6" }}>Loading posts...</div>;
 
     return (
         <>
