@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Post from "../Post";
+import Loading from "../components/Loading";
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -20,7 +21,7 @@ export default function IndexPage() {
             });
     }, []);
 
-    if (loading) return <div>Loading posts...</div>;
+    if (loading) return <Loading />;
 
     return (
         <>
