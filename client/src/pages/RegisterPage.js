@@ -14,37 +14,22 @@ export default function RegisterPage() {
 
     async function register(ev) {
         ev.preventDefault();
-        setError('');
 
-        if (!validatePassword(password)) {
-            setError('Password must be 8-20 characters, include at least 1 uppercase letter, 1 number, and 1 special character.');
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,20}$/;
+        if (!passwordRegex.test(password)) {
+            alert("Password must be 8-20 characters, include at least 1 uppercase letter, 1 number, and 1 special character.");
             return;
         }
 
-        if (!username || username.trim() === '') {
-            setError('Username cannot be empty.');
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API}/register`, {
-                method: 'POST',
-                body: JSON.stringify({ username, password }),
-                headers: { 'Content-Type': 'application/json' },
-            });
-
-            if (response.status === 200) {
-                alert('Registration successful!');
-                setUsername('');
-                setPassword('');
-                setError('');
-            } else {
-                const data = await response.json();
-                setError(data.message || 'Registration failed.');
-            }
-        } catch (err) {
-            console.error(err);
-            setError('An error occurred. Please try again.');
+        const response = await fetch(`http://localhost:4000/register`, {
+            method: 'POST',
+            body: JSON.stringify({ username, password }),
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (response.status === 200) {
+            alert('Registration successful!');
+        } else {
+            alert('Registration failed.');
         }
     }
 

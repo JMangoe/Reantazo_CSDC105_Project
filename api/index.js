@@ -58,18 +58,25 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 mongoose.connect(mongoURI);
 
 app.post('/register', async (req, res) => {
-    const {username, password} = req.body;
+    const { username, password } = req.body;
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,20}$/;
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+            error: "Password must be 8-20 characters, include at least 1 uppercase letter, 1 number, and 1 special character."
+        });
+    }
+
     try {
         const userDoc = await User.create({
             username,
-            password:bcrypt.hashSync(password, salt),
+            password: bcrypt.hashSync(password, salt),
         });
         res.json(userDoc);
-    } catch(e) {
+    } catch (e) {
         console.log(e)
         res.status(400).json(e);
     }
-    
 });
 
 app.post('/login', async (req,res) => {
