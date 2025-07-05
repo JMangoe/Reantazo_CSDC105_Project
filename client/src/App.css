@@ -402,6 +402,7 @@ button.delete-btn svg {
     display: flex;
     justify-content: center;
     margin: 15px 0;
+    border-top: 1px solid var(--border);
 }
 
 .like-btn {
@@ -418,6 +419,7 @@ button.delete-btn svg {
     font-weight: 600;
     transition: all 0.2s ease;
     font-size: 0.9rem;
+    justify-content: center;
 }
 
 .like-btn:hover {
@@ -430,8 +432,8 @@ button.delete-btn svg {
 }
 
 .like-btn svg {
-    height: 18px;
-    width: 18px;
+    height: 20px;
+    width: 20px;
 }
 
 /* Comments Section Styling */
