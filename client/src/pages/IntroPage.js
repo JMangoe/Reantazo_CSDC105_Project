@@ -23,7 +23,7 @@ export default function IntroPage() {
             <div 
                 className="intro-page fade-in" 
                 style={{
-                    minHeight: '50vh',
+                    minHeight: '70vh',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -81,7 +81,7 @@ export default function IntroPage() {
                             >
                                 {highlights.latestPost.cover && (
                                     <img
-                                        src={`${API}/${highlights.latestPost.cover}`}
+                                        src={`http://localhost:4000/${highlights.latestPost.cover}`}
                                         alt={highlights.latestPost.title}
                                         className="highlight-cover"
                                         style={{ width: '100%', height: '200px', objectFit: 'cover' }}
@@ -122,7 +122,7 @@ export default function IntroPage() {
                             >
                                 {highlights.mostViewedPost.cover && (
                                     <img
-                                        src={`${API}/${highlights.mostViewedPost.cover}`}
+                                        src={`http://localhost:4000/${highlights.mostViewedPost.cover}`}
                                         alt={highlights.mostViewedPost.title}
                                         className="highlight-cover"
                                         style={{ width: '100%', height: '200px', objectFit: 'cover' }}
