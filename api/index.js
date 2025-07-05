@@ -188,6 +188,26 @@ app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
 
 });
 
+// display latest and most viewed post as highlight
+app.get('/post/highlights', async (req, res) => {
+    try {
+        const latestPost = await Post.findOne()
+            .populate('author', ['username'])
+            .sort({ createdAt: -1 })
+            .exec();
+
+        const mostViewedPost = await Post.findOne()
+            .populate('author', ['username'])
+            .sort({ views: -1 })
+            .exec();
+
+        res.json({ latestPost, mostViewedPost });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch post highlights" });
+    }
+});
+
 app.get('/post', async (req,res) => {
     res.json(
         await Post.find()

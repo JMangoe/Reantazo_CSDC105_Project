@@ -340,3 +340,59 @@ button.delete-btn svg {
 .social-buttons a:hover {
   background-color: #777;
 }
+
+.highlights-container {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 0 1rem;
+}
+
+.highlight-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.highlight-card {
+    flex: 1 1 48%;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.highlight-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.highlight-cover {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.highlight-card h3 {
+    margin: 0.5rem 1rem 0 1rem;
+    font-size: 1.25rem;
+}
+
+.highlight-card p {
+    margin: 0.25rem 1rem;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .highlight-card {
+        flex: 1 1 100%;
+    }
+    .highlight-cover {
+        height: 200px;
+    }
+}
