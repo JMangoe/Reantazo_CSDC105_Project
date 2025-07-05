@@ -11,7 +11,12 @@ export default function IndexPage() {
         fetch(`${API}/post`)
             .then((response) => response.json()) 
             .then((posts) => {
-                setPosts(posts);
+                const postsWithCounts = posts.map(post => ({
+                    ...post,
+                    likeCount: post.likes?.length || 0,
+                    commentCount: post.comments?.length || 0
+                }));
+                setPosts(postsWithCounts);
                 setLoading(false);
             })
             .catch((error) => {
@@ -25,7 +30,11 @@ export default function IndexPage() {
     return (
         <>
             {posts.length > 0 ? (
-                posts.map((post) => <Post key={post._id} {...post} />)
+                posts.map((post) => <Post 
+                    key={post._id} 
+                    {...post} 
+                    likeCount={post.likeCount}
+                    commentCount={post.commentCount}/>)
             ) : (
                 <div>No posts found.</div>
             )}

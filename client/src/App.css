@@ -402,7 +402,6 @@ button.delete-btn svg {
     display: flex;
     justify-content: center;
     margin: 15px 0;
-    border-top: 1px solid var(--border);
 }
 
 .like-btn {
@@ -559,4 +558,27 @@ button.delete-btn svg {
     .comment-form textarea {
         min-height: 80px;
     }
+}
+
+/* Engagement metrics styling */
+.engagement-metrics {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.engagement-metrics span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.engagement-metrics .likes {
+    color: #e74c3c; /* Red color for likes */
+}
+
+.engagement-metrics .comments {
+    color: #3498db; /* Blue color for comments */
 }
