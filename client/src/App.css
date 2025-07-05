@@ -397,7 +397,7 @@ button.delete-btn svg {
     }
 }
 
-/* Like button section */
+/* Like Button Styling */
 .like-section {
     display: flex;
     justify-content: center;
@@ -417,6 +417,7 @@ button.delete-btn svg {
     font-family: 'Manrope', sans-serif;
     font-weight: 600;
     transition: all 0.2s ease;
+    font-size: 0.9rem;
 }
 
 .like-btn:hover {
@@ -429,23 +430,31 @@ button.delete-btn svg {
 }
 
 .like-btn svg {
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
 }
 
-/* Comments section - matched to your existing cards */
+/* Comments Section Styling */
 .comments-section {
     margin-top: 40px;
     padding-top: 30px;
     border-top: 1px solid var(--border);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .comments-section h3 {
     font-family: 'Manrope', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     margin-bottom: 20px;
     color: var(--text);
-    text-align: center;
+    font-weight: 600;
+    text-align: left;
+}
+
+.comment-form {
+    margin-bottom: 30px;
 }
 
 .comment-form textarea {
@@ -467,40 +476,58 @@ button.delete-btn svg {
     border-color: var(--accent);
 }
 
+.submit-comment-btn {
+    background-color: var(--text);
+    color: var(--bg);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.submit-comment-btn:hover {
+    background-color: #333;
+}
+
 .comments-list {
     margin-top: 25px;
 }
 
 .comment {
-    padding: 18px;
+    padding: 15px;
     border-radius: 6px;
     margin-bottom: 20px;
     background-color: var(--bg);
-    border: 2px solid var(--border);
+    border: 1px solid var(--border);
 }
 
 .comment-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
+    margin-bottom: 8px;
 }
 
 .comment-author {
     font-weight: 600;
     color: var(--text);
+    font-size: 0.9rem;
 }
 
 .comment-date {
     color: var(--muted);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
 }
 
 .comment-content {
-    line-height: 1.6;
+    line-height: 1.5;
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    margin-top: 8px;
 }
 
 .delete-comment-btn {
@@ -517,21 +544,17 @@ button.delete-btn svg {
 }
 
 .delete-comment-btn svg {
-    height: 18px;
-    width: 18px;
+    height: 16px;
+    width: 16px;
 }
 
 /* Responsive adjustments */
-@media screen and (min-width: 700px) {
-    .comment-form {
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
+@media (max-width: 768px) {
+    .comments-section {
+        padding: 20px 15px;
     }
     
-    .comments-list {
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
+    .comment-form textarea {
+        min-height: 80px;
     }
 }
