@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require("mongoose");
 const User = require('./models/User');
 const Post = require('./models/Post');
+const Comment = require('./models/Comment');
 const bcrypt = require('bcryptjs');
 const app = express();
 const jwt = require('jsonwebtoken');
@@ -261,3 +262,114 @@ app.delete('/post/:id', async(req,res) => {
         res.json({ message: 'Post deleted successfully.'});
     });
 })
+
+//like and unlike function
+app.post('/post/:id/like', async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+  jwt.verify(token, secret, {}, async (err, info) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+
+    if (!post.likes.includes(info.id)) {
+      post.likes.push(info.id);
+      await post.save();
+    }
+
+    res.json({ likes: post.likes.length });
+  });
+});
+
+app.post('/post/:id/unlike', async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+  jwt.verify(token, secret, {}, async (err, info) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+
+    post.likes = post.likes.filter(userId => userId.toString() !== info.id);
+    await post.save();
+
+    res.json({ likes: post.likes.length });
+  });
+});
+
+//comment function
+app.post('/post/:postId/comments', async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+  jwt.verify(token, secret, {}, async (err, info) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+
+    const { postId } = req.params;
+    const { text } = req.body;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+
+    const comment = await Comment.create({
+      text,
+      author: info.id,
+      post: postId
+    });
+
+    post.comments.push(comment._id);
+    await post.save();
+
+    const populatedComment = await Comment.findById(comment._id)
+      .populate('author', 'username');
+
+    res.json(populatedComment);
+  });
+});
+
+app.get('/post/:postId/comments', async (req, res) => {
+  const { postId } = req.params;
+
+  try {
+    const comments = await Comment.find({ post: postId })
+      .populate('author', 'username')
+      .sort({ createdAt: 1 });
+
+    res.json(comments);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch comments' });
+  }
+});
+
+app.delete('/comments/:id', async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+  jwt.verify(token, secret, {}, async (err, info) => {
+    if (err) return res.status(403).json({ error: 'Invalid token' });
+
+    const comment = await Comment.findById(req.params.id)
+      .populate('author', '_id')
+      .populate('post', 'author');
+
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+    const isCommentAuthor = comment.author._id.toString() === info.id;
+    const isPostAuthor = comment.post.author.toString() === info.id;
+
+    if (!isCommentAuthor && !isPostAuthor) {
+      return res.status(403).json({ error: 'Not allowed' });
+    }
+
+    await Post.findByIdAndUpdate(comment.post._id, {
+      $pull: { comments: comment._id }
+    });
+
+    await Comment.deleteOne({ _id: req.params.id });
+
+    res.json({ message: 'Comment deleted successfully' });
+  });
+});
