@@ -49,7 +49,7 @@ function requireAuth(req, res, next) {
 app.use(cors({credentials:true, 
     origin: [
         'http://localhost:3000', 
-        'https://broquote-essays.vercel.app/']
+        'https://broquote-essays.vercel.app']
     }));
 app.use(express.json());
 app.use(cookieParser());
