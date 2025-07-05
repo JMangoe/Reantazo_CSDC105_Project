@@ -397,11 +397,11 @@ button.delete-btn svg {
     }
 }
 
-/* Like button styles - matched to your theme */
+/* Like button section */
 .like-section {
-    margin: 15px 0;
     display: flex;
     justify-content: center;
+    margin: 15px 0;
 }
 
 .like-btn {
@@ -448,10 +448,6 @@ button.delete-btn svg {
     text-align: center;
 }
 
-.comment-form {
-    margin-bottom: 30px;
-}
-
 .comment-form textarea {
     width: 100%;
     padding: 12px 15px;
@@ -469,24 +465,6 @@ button.delete-btn svg {
 .comment-form textarea:focus {
     outline: none;
     border-color: var(--accent);
-}
-
-.submit-comment-btn {
-    width: 100%;
-    display: block;
-    background-color: var(--text);
-    color: var(--bg);
-    border: none;
-    border-radius: 5px;
-    padding: 12px 0;
-    font-family: 'Manrope', sans-serif;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.submit-comment-btn:hover {
-    background-color: #333;
 }
 
 .comments-list {

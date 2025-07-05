@@ -110,12 +110,12 @@ export default function Postpage() {
             return;
         }
 
-        const response = await fetch(`${API}/post/${id}/comment`, {
+        const response = await fetch(`${API}/post/${id}/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ content: commentContent }),
+            body: JSON.stringify({ text: commentContent }),
             credentials: 'include',
         });
 
@@ -152,17 +152,7 @@ export default function Postpage() {
             <h1>{postInfo.title}</h1>
             <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
             <div className="author">by @{postInfo.author.username}</div>
-            <div className="like-section">
-                <button 
-                    onClick={handleLike} 
-                    className={`like-btn ${isLiked ? 'liked' : ''}`}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill={isLiked ? "red" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                    {likeCount}
-                </button>
-            </div>
+            
             {userInfo?.id === postInfo.author._id && (
                 <div className="edit-row">
                     <Link className="edit-btn" to={`/edit/${postInfo._id}`}>
@@ -184,6 +174,18 @@ export default function Postpage() {
             </div>
 
             <div className="content" dangerouslySetInnerHTML={{__html:postInfo.content}} />
+            
+            <div className="like-section">
+                <button 
+                    onClick={handleLike} 
+                    className={`like-btn ${isLiked ? 'liked' : ''}`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill={isLiked ? "red" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    {likeCount}
+                </button>
+            </div>
             
             <div className="comments-section">
                 <h3>Comments ({comments.length})</h3>
@@ -219,7 +221,7 @@ export default function Postpage() {
                                     </button>
                                 )}
                             </div>
-                            <div className="comment-content">{comment.content}</div>
+                            <div className="comment-content">{comment.text}</div>
                         </div>
                     ))}
                 </div>
