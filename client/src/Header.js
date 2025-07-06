@@ -34,24 +34,23 @@ const username = userInfo?.username;
             <Link to="/">
                 <img src={logo} alt="BroQuote Logo" className="logo-img" />
             </Link>
-            <Link to="/blogs" className="logo">All Blogs</Link>
+            <Link to="/blogs" className={`logo${location.pathname === "/blogs" ? " active" : ""}`}>All Blogs</Link>
         </div>
 
         <nav className="fade-in">
             {username && (
                 <>
                     <span>Welcome, {username} </span>
-                    <Link to="/create">Create new post</Link>
+                    <Link to="/create" className={location.pathname === "/create" ? "active" : ""}>Create new post</Link>
                     <a onClick={logout}>Logout</a>
                 </>
             )}
             {!username && (
                 <>
-                    <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
+                    <Link to="/login" className={location.pathname === "/login" ? "active" : ""}>Login</Link>
+                    <Link to="/register" className={location.pathname === "/register" ? "active" : ""}>Register</Link>
                 </>
             )}
-
         </nav>
     </header>
     );
