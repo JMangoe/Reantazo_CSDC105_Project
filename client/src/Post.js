@@ -1,4 +1,4 @@
-import { getSmartDate } from "/utils/formatDate";
+import { getSmartDate } from "./utils/formatDate";
 import { Link } from "react-router-dom";
 
 const API = process.env.REACT_APP_API_URL;
