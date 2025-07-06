@@ -1,12 +1,14 @@
-import { Link } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useContext, useEffect} from "react";
 import { UserContext } from "./UserContext";
 import logo from './assets/bro-quote-logo.png';
 
 const API = process.env.REACT_APP_API_URL;
 
 export default function Header() {
-    const {setUserInfo,userInfo} = useContext(UserContext)
+    const {setUserInfo,userInfo} = useContext(UserContext);
+    const location = useLocation();
+
     useEffect(() => {
         fetch(`${API}/profile`, {
             credentials: 'include', 
@@ -15,7 +17,7 @@ export default function Header() {
                 setUserInfo(userInfo);
             });
         });
-    }, []);
+    }, [setUserInfo]);
 
 function logout() {
     fetch (`${API}/logout`, {
@@ -34,24 +36,22 @@ const username = userInfo?.username;
             <Link to="/">
                 <img src={logo} alt="BroQuote Logo" className="logo-img" />
             </Link>
-            <Link to="/blogs" className="logo">All Blogs</Link>
+            <Link to="/blogs" className={`logo ${location.pathname === "/blogs" ? "active" : ""}`}>All Blogs</Link>
         </div>
 
-        <nav className="fade-in">
-            {username && (
-                <>
-                    <span>Welcome, {username} </span>
-                    <Link to="/create">Create new post</Link>
-                    <a onClick={logout}>Logout</a>
-                </>
-            )}
-            {!username && (
-                <>
-                    <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
-                </>
-            )}
-
+        <nav className="nav-links fade-in">
+            {username ? (
+                    <>
+                        <span className="welcome">Welcome, {username}</span>
+                        <Link to="/create" className={location.pathname === "/create" ? "active" : ""}>Create new post</Link>
+                        <button className="logout-btn" onClick={logout}>Logout</button>
+                    </>
+                ) : (
+                    <>
+                        <Link to="/login" className={location.pathname === "/login" ? "active" : ""}>Login</Link>
+                        <Link to="/register" className={location.pathname === "/register" ? "active" : ""}>Register</Link>
+                    </>
+                )}
         </nav>
     </header>
     );
