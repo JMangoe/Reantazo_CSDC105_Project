@@ -532,12 +532,13 @@ button.delete-btn svg {
 }
 
 .delete-comment-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--muted);
-    padding: 2px;
-    transition: all 0.2s ease;
+  background: none;
+  border: none;
+  padding: 2px;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .delete-comment-btn:hover {

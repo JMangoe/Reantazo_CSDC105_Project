@@ -32,7 +32,7 @@ export default function Postpage() {
             const response = await fetch(`${API}/post/${id}`);
             const postInfo = await response.json();
             setPostInfo(postInfo);
-            setLikeCount(postInfo.likes || 0);
+            setLikeCount(Array.isArray(postInfo.likes) ? postInfo.likes.length : 0);
 
             //check if the user has liked the post
             if (userInfo){
