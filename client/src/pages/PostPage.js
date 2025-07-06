@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { getSmartDate } from "../utils/formatDate";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../UserContext";
@@ -150,7 +150,7 @@ export default function Postpage() {
     return (
         <div className="post-page fade-in">
             <h1>{postInfo.title}</h1>
-            <time>{formatDistanceToNow(new Date(postInfo.createdAt), { addSuffix: true })}</time>
+            <time>{getSmartDate(postInfo.createdAt)}</time>
             <div className="author">by @{postInfo.author.username}</div>
             
             {userInfo?.id === postInfo.author._id && (
@@ -208,7 +208,7 @@ export default function Postpage() {
                             <div className="comment-header">
                                 <span className="comment-author">@{comment.author.username}</span>
                                 <span className="comment-date">
-                                    {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                                    <time>{getSmartDate(comment.createdAt)}</time>
                                 </span>
                                 {(userInfo?.id === comment.author._id || userInfo?.id === postInfo.author._id) && (
                                     <button 

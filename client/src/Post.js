@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { getSmartDate } from "/utils/formatDate";
 import { Link } from "react-router-dom";
 
 const API = process.env.REACT_APP_API_URL;
@@ -19,7 +19,7 @@ export default function Post({_id, title, summary, cover, content, createdAt, au
             </Link>
             <p className="info">
                 <a className="author">{author?.username || "Unknown Author"}</a>
-                <time>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</time>
+                <time>{getSmartDate(createdAt)}</time>
                 <span className="views">👁 {views || 0} views</span>
             </p>
             <p className="summary">{summary}</p>
