@@ -283,6 +283,22 @@ app.post('/post/:id/like', async (req, res) => {
   });
 });
 
+app.get('/post/:id/like/check', async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) return res.status(401).json({ liked: false });
+
+  jwt.verify(token, secret, {}, async (err, info) => {
+    if (err) return res.status(403).json({ liked: false });
+
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ liked: false });
+
+    const liked = post.likes.includes(info.id);
+    res.json({ liked });
+  });
+});
+
+
 app.post('/post/:id/unlike', async (req, res) => {
   const { token } = req.cookies;
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
