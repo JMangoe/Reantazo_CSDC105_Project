@@ -41,15 +41,12 @@ main{
 
 header{
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  background: #222;
-  color: #fff;
-  padding: 1rem 2rem;
-  border-radius: 12px;
   margin-top: 20px;
-  margin-bottom: 40px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 50px;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
 }
 
 header a {
@@ -281,28 +278,15 @@ button.delete-btn svg {
   }
 }
 
-.logo {
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.2rem;
-  text-decoration: none;
-  transition: color 0.2s;
-  padding: 0.2rem 0.7rem;
-  border-radius: 4px;
-}
-
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
 }
 
 .logo-img {
-  height: 40px;
-  width: auto;
-  border-radius: 8px;
-  background: #fff;
-  padding: 2px;
+  height: 100px;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .logo-text {
@@ -316,12 +300,6 @@ button.delete-btn svg {
   height: 100px;
   margin-bottom: 20px;
   animation: fadeIn 1.5s ease;
-}
-
-.logo.active,
-.logo:hover {
-  color: #ffd700;
-  background: #333;
 }
 
 /* main CTA button */
@@ -607,51 +585,4 @@ button.delete-btn svg {
 
 .engagement-metrics .comments {
     color: #3498db; /* Blue color for comments */
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-.nav-links a,
-.nav-links button {
-  color: #fff;
-  background: none;
-  border: none;
-  font: inherit;
-  text-decoration: none;
-  padding: 0.3rem 0.7rem;
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s;
-  cursor: pointer;
-}
-
-.nav-links a.active,
-.nav-links a:hover,
-.nav-links button:hover {
-  background: #fff;
-  color: #222;
-}
-
-.logout-btn {
-  color: #fff;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.3rem 0.7rem;
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.logout-btn:hover {
-  background: #fff;
-  color: #e74c3c;
-}
-
-.welcome {
-  margin-right: 0.5rem;
-  font-size: 1rem;
-  color: #ffd700;
 }
