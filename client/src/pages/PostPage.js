@@ -134,7 +134,7 @@ export default function Postpage() {
         const confirmed = window.confirm("Are you sure you want to delete this comment?");
         if (!confirmed) return;
 
-        const response = await fetch(`${API}/comment/${commentId}`, {
+        const response = await fetch(`${API}/comments/${commentId}`, {
             method: 'DELETE',
             credentials: 'include',
         });
