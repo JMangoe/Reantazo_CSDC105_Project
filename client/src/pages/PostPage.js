@@ -1,4 +1,4 @@
-import { formatISO9075 } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../UserContext";
@@ -150,7 +150,7 @@ export default function Postpage() {
     return (
         <div className="post-page fade-in">
             <h1>{postInfo.title}</h1>
-            <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
+            <time>{formatDistanceToNow(new Date(postInfo.createdAt), { addSuffix: true })}</time>
             <div className="author">by @{postInfo.author.username}</div>
             
             {userInfo?.id === postInfo.author._id && (
@@ -208,7 +208,7 @@ export default function Postpage() {
                             <div className="comment-header">
                                 <span className="comment-author">@{comment.author.username}</span>
                                 <span className="comment-date">
-                                    {formatISO9075(new Date(comment.createdAt))}
+                                    {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                                 </span>
                                 {(userInfo?.id === comment.author._id || userInfo?.id === postInfo.author._id) && (
                                     <button 
