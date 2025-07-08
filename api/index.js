@@ -114,15 +114,31 @@ app.post('/login', async (req,res) => {
 
 });
 
-app.get('/profile', (req, res) => {
+app.get('/profile', async (req, res) => {
     const { token } = req.cookies;
     if (!token) return res.status(401).json(null);
 
-    jwt.verify(token, secret, {}, (err, user) => {
+    jwt.verify(token, secret, {}, async (err, userData) => {
         if (err) return res.status(403).json(null);
-        res.json(user);
+
+        try {
+            const userDoc = await User.findById(userData.id);
+            if (!userDoc) {
+                // user deleted but token still exists — force logout
+                return res.status(401).json(null);
+            }
+
+            res.json({
+                id: userDoc._id,
+                username: userDoc.username,
+            });
+        } catch (e) {
+            console.error('Error verifying profile:', e);
+            res.status(500).json(null);
+        }
     });
 });
+
 
 app.post('/logout', (req, res) => {
   res.clearCookie('token', {
