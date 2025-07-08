@@ -9,13 +9,17 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-const multer = require ('multer');
+const multer = require('multer');
 const fs = require('fs');
 const helmet = require('helmet');
 const cloudinary = require('./utils/cloudinary');
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const crypto = require('crypto');
 
 
-const uploadMiddleware = multer({ 
+
+const uploadMiddleware = multer({
     dest: 'uploads/',
     limits: {
         fieldSize: 10 * 1024 * 1024, //10MB for text fields
@@ -46,18 +50,18 @@ function requireAuth(req, res, next) {
 }
 
 app.use(cors({
-    credentials:true, 
+    credentials: true,
     origin: ['http://localhost:3000', process.env.CLIENT_ORIGIN]
-    }));
+}));
 app.use(express.json());
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 app.use(cookieParser());
 
 mongoose.connect(mongoURI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+    .then(() => console.log("✅ MongoDB connected"))
+    .catch(err => console.error("❌ MongoDB connection error:", err));
 
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -81,38 +85,104 @@ app.post('/register', async (req, res) => {
     }
 });
 
-app.post('/login', async (req,res) => {
-    const {username, password} = req.body;
-    const userDoc = await User.findOne({username});
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const userDoc = await User.findOne({ username });
 
-    if(!userDoc) { //user not found
+    if (!userDoc) { //user not found
         return res.status(400).json('Invalid username or password');
     }
 
     const passOk = bcrypt.compareSync(password, userDoc.password);
 
-    if (!passOk){
-        return res.status(400).json('Invalid username or password');      
+    if (!passOk) {
+        return res.status(400).json('Invalid username or password');
     }
 
     //if password is correct, create JWT token and send it in cookie
     //add expiry to jwt for boost of security
-    jwt.sign({username, id:userDoc._id}, secret, {expiresIn: '1d'}, (err,token) => {
+    jwt.sign({ username, id: userDoc._id }, secret, { expiresIn: '1d' }, (err, token) => {
         if (err) {
             console.error(err);
             return res.status(500).json('Internal server error');
         }
-        res.cookie('token', token, { 
+        res.cookie('token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'None'
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
         }).json({
-            id:userDoc._id,
+            id: userDoc._id,
             username,
         });
     });
 
 });
+
+app.post('/google-login', async (req, res) => {
+    const { credential } = req.body;
+
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        const { email, name, sub } = payload;
+
+        // Check if user exists by googleId
+        let user = await User.findOne({ googleId: sub });
+        if (!user) {
+            const randomPassword = crypto.randomBytes(16).toString('hex');
+            const hashedPassword = bcrypt.hashSync(randomPassword, 10);
+
+            // Prepare a username using the Google profile name
+            let proposedUsername = name ? name.trim().replace(/\s+/g, '_') : email.split('@')[0];
+
+            // Ensure username uniqueness
+            let uniqueUsername = proposedUsername;
+            let counter = 1;
+            while (await User.findOne({ username: uniqueUsername })) {
+                uniqueUsername = `${proposedUsername}_${Math.floor(1000 + Math.random() * 9000)}`;
+                counter++;
+                if (counter > 5) break; // prevent infinite loop
+            }
+
+            user = await User.create({
+                username: uniqueUsername,
+                googleId: sub,
+                email: email,
+                password: hashedPassword,
+            });
+        }
+
+        // Create JWT
+        jwt.sign(
+            { id: user._id, username: user.username },
+            secret,
+            { expiresIn: '1d' },
+            (err, token) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json('Internal server error');
+                }
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'None',
+                }).json({
+                    id: user._id,
+                    username: user.username,
+                });
+            }
+        );
+
+    } catch (err) {
+        console.error(err);
+        res.status(401).json({ error: 'Invalid Google credentials' });
+    }
+});
+
+
 
 app.get('/profile', async (req, res) => {
     const { token } = req.cookies;
@@ -141,14 +211,14 @@ app.get('/profile', async (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-  }).json({ message: "Logged out" });
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+    }).json({ message: "Logged out" });
 });
 
-app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
+app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
     const { originalname, path } = req.file;
     const ext = originalname.split('.').pop().toLowerCase();
 
@@ -185,25 +255,25 @@ app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
     }
 });
 
-app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
+app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
     let newPath = null;
-    if (req.file){
-        const {originalname, path} = req.file;
+    if (req.file) {
+        const { originalname, path } = req.file;
         const ext = originalname.split('.').pop().toLowerCase();
 
         if (!allowedExtensions.includes(ext)) {
             fs.unlinkSync(path);  // delete the temp uploaded file
-            return res.status(400).json({error: 'File type not allowed'});
+            return res.status(400).json({ error: 'File type not allowed' });
         }
 
         newPath = path + '.' + ext;
         fs.renameSync(path, newPath);
     }
 
-    const {token} = req.cookies;
-    jwt.verify(token, secret, {}, async (err,info) => {
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, async (err, info) => {
         if (err) throw err;
-        const {id, title, summary, content} = req.body;
+        const { id, title, summary, content } = req.body;
         const postDoc = await Post.findById(id);
         const isAuthor = postDoc.author.toString() === info.id
         if (!isAuthor) {
@@ -216,8 +286,8 @@ app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
         if (newPath) {
             try {
                 const result = await cloudinary.uploader.upload(newPath, {
-                folder: "broquote_covers",
-                use_filename: true,
+                    folder: "broquote_covers",
+                    use_filename: true,
                 });
                 postDoc.cover = result.secure_url;
                 fs.unlinkSync(newPath); // remove the local file after upload
@@ -230,7 +300,7 @@ app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
         await postDoc.save();
 
         res.json(postDoc);
-        
+
     });
 
 });
@@ -239,16 +309,16 @@ app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
 app.get('/post/highlights', async (req, res) => {
     try {
         const latestPost = await Post.findOne()
-        .populate('author', ['username'])
-        .sort({ createdAt: -1 });
+            .populate('author', ['username'])
+            .sort({ createdAt: -1 });
 
         let mostViewedPost = await Post.findOne({ _id: { $ne: latestPost?._id } })
-        .populate('author', ['username'])
-        .sort({ views: -1 });
+            .populate('author', ['username'])
+            .sort({ views: -1 });
 
         // If there’s no other post with different ID (e.g. only 1 post exists), fallback
         if (!mostViewedPost && latestPost) {
-        mostViewedPost = latestPost;
+            mostViewedPost = latestPost;
         }
 
         res.json({ latestPost, mostViewedPost });
@@ -259,18 +329,18 @@ app.get('/post/highlights', async (req, res) => {
     }
 });
 
-app.get('/post', async (req,res) => {
+app.get('/post', async (req, res) => {
     res.json(
         await Post.find()
             .populate('author', ['username'])
-            .sort({createdAt: -1})
+            .sort({ createdAt: -1 })
             .limit(20)
     );
 });
 
-app.get('/post/:id', async(req, res) => {
-    const {id} = req.params;
-    const postDoc = await Post.findById(id).populate('author',['username']);
+app.get('/post/:id', async (req, res) => {
+    const { id } = req.params;
+    const postDoc = await Post.findById(id).populate('author', ['username']);
     res.json(postDoc);
 })
 
@@ -293,145 +363,145 @@ app.listen(PORT, () => {
 //Additional Features:
 
 //delete function
-app.delete('/post/:id', async(req,res) => {
+app.delete('/post/:id', async (req, res) => {
     const { token } = req.cookies;
-    jwt.verify(token, secret, {}, async(err,info) => {
-        if (err) return res.status(401).json({error: 'Unauthorized'});
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) return res.status(401).json({ error: 'Unauthorized' });
 
         const post = await Post.findById(req.params.id);
-        if (!post) return res.status(404).json({error: 'Post not found'});
+        if (!post) return res.status(404).json({ error: 'Post not found' });
 
         const isAuthor = post.author.toString() === info.id;
-        if (!isAuthor) return res.status(403).json({error: 'You are not the author.'});
+        if (!isAuthor) return res.status(403).json({ error: 'You are not the author.' });
 
-        await Post.deleteOne({_id: req.params.id});
-        res.json({ message: 'Post deleted successfully.'});
+        await Post.deleteOne({ _id: req.params.id });
+        res.json({ message: 'Post deleted successfully.' });
     });
 })
 
 //like and unlike function
 app.post('/post/:id/like', async (req, res) => {
-  const { token } = req.cookies;
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+    const { token } = req.cookies;
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
-  jwt.verify(token, secret, {}, async (err, info) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) return res.status(403).json({ error: 'Invalid token' });
 
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+        const post = await Post.findById(req.params.id);
+        if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    if (!post.likes.includes(info.id)) {
-      post.likes.push(info.id);
-      await post.save();
-    }
+        if (!post.likes.includes(info.id)) {
+            post.likes.push(info.id);
+            await post.save();
+        }
 
-    res.json({ likes: post.likes.length });
-  });
+        res.json({ likes: post.likes.length });
+    });
 });
 
 app.get('/post/:id/like/check', async (req, res) => {
-  const { token } = req.cookies;
-  if (!token) return res.status(401).json({ liked: false });
+    const { token } = req.cookies;
+    if (!token) return res.status(401).json({ liked: false });
 
-  jwt.verify(token, secret, {}, async (err, info) => {
-    if (err) return res.status(403).json({ liked: false });
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) return res.status(403).json({ liked: false });
 
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ liked: false });
+        const post = await Post.findById(req.params.id);
+        if (!post) return res.status(404).json({ liked: false });
 
-    const liked = post.likes.includes(info.id);
-    res.json({ liked });
-  });
+        const liked = post.likes.includes(info.id);
+        res.json({ liked });
+    });
 });
 
 
 app.post('/post/:id/unlike', async (req, res) => {
-  const { token } = req.cookies;
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+    const { token } = req.cookies;
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
-  jwt.verify(token, secret, {}, async (err, info) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) return res.status(403).json({ error: 'Invalid token' });
 
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+        const post = await Post.findById(req.params.id);
+        if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    post.likes = post.likes.filter(userId => userId.toString() !== info.id);
-    await post.save();
+        post.likes = post.likes.filter(userId => userId.toString() !== info.id);
+        await post.save();
 
-    res.json({ likes: post.likes.length });
-  });
+        res.json({ likes: post.likes.length });
+    });
 });
 
 //comment function
 app.post('/post/:postId/comments', async (req, res) => {
-  const { token } = req.cookies;
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+    const { token } = req.cookies;
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
-  jwt.verify(token, secret, {}, async (err, info) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) return res.status(403).json({ error: 'Invalid token' });
 
-    const { postId } = req.params;
-    const { text } = req.body;
+        const { postId } = req.params;
+        const { text } = req.body;
 
-    const post = await Post.findById(postId);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+        const post = await Post.findById(postId);
+        if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    const comment = await Comment.create({
-      text,
-      author: info.id,
-      post: postId
+        const comment = await Comment.create({
+            text,
+            author: info.id,
+            post: postId
+        });
+
+        post.comments.push(comment._id);
+        await post.save();
+
+        const populatedComment = await Comment.findById(comment._id)
+            .populate('author', 'username');
+
+        res.json(populatedComment);
     });
-
-    post.comments.push(comment._id);
-    await post.save();
-
-    const populatedComment = await Comment.findById(comment._id)
-      .populate('author', 'username');
-
-    res.json(populatedComment);
-  });
 });
 
 app.get('/post/:postId/comments', async (req, res) => {
-  const { postId } = req.params;
+    const { postId } = req.params;
 
-  try {
-    const comments = await Comment.find({ post: postId })
-      .populate('author', 'username')
-      .sort({ createdAt: 1 });
+    try {
+        const comments = await Comment.find({ post: postId })
+            .populate('author', 'username')
+            .sort({ createdAt: 1 });
 
-    res.json(comments);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch comments' });
-  }
+        res.json(comments);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch comments' });
+    }
 });
 
 app.delete('/comments/:id', async (req, res) => {
-  const { token } = req.cookies;
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+    const { token } = req.cookies;
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
-  jwt.verify(token, secret, {}, async (err, info) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) return res.status(403).json({ error: 'Invalid token' });
 
-    const comment = await Comment.findById(req.params.id)
-      .populate('author', '_id')
-      .populate('post', 'author');
+        const comment = await Comment.findById(req.params.id)
+            .populate('author', '_id')
+            .populate('post', 'author');
 
-    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+        if (!comment) return res.status(404).json({ error: 'Comment not found' });
 
-    const isCommentAuthor = comment.author._id.toString() === info.id;
-    const isPostAuthor = comment.post.author.toString() === info.id;
+        const isCommentAuthor = comment.author._id.toString() === info.id;
+        const isPostAuthor = comment.post.author.toString() === info.id;
 
-    if (!isCommentAuthor && !isPostAuthor) {
-      return res.status(403).json({ error: 'Not allowed' });
-    }
+        if (!isCommentAuthor && !isPostAuthor) {
+            return res.status(403).json({ error: 'Not allowed' });
+        }
 
-    await Post.findByIdAndUpdate(comment.post._id, {
-      $pull: { comments: comment._id }
+        await Post.findByIdAndUpdate(comment.post._id, {
+            $pull: { comments: comment._id }
+        });
+
+        await Comment.deleteOne({ _id: req.params.id });
+
+        res.json({ message: 'Comment deleted successfully' });
     });
-
-    await Comment.deleteOne({ _id: req.params.id });
-
-    res.json({ message: 'Comment deleted successfully' });
-  });
 });
