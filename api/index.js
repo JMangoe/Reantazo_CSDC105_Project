@@ -147,7 +147,7 @@ app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
             title,
             summary,
             content,
-            cover:newPath,
+            cover: `https://broquote-backend.onrender.com/uploads/${newPath.split('/').pop()}`,
             author:info.id,
         });
         res.json(postDoc);  
@@ -184,7 +184,7 @@ app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
         postDoc.summary = summary;
         postDoc.content = content;
         if (newPath) {
-            postDoc.cover = newPath;
+            postDoc.cover = `https://broquote-backend.onrender.com/uploads/${newPath.split('/').pop()}`;
         }
 
         await postDoc.save();

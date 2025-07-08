@@ -1,15 +1,12 @@
 import { getSmartDate } from "./utils/formatDate";
 import { Link } from "react-router-dom";
 
-const API = process.env.REACT_APP_API_URL;
-
-
 export default function Post({_id, title, summary, cover, content, createdAt, author, views}) {
     return (
     <div className="post fade-in">
         <div className="image">
             <Link to={`/post/${_id}`}>
-                <img src={`${API}/`+cover} alt=""/>
+                <img src={cover} alt=""/>
             </Link>
             
         </div>
