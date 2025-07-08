@@ -81,8 +81,9 @@ export default function IntroPage() {
                             >
                                 {highlights.latestPost.cover && (
                                     <img
-                                        src={`http://localhost:4000/${highlights.latestPost.cover}`}
+                                        src={highlights.latestPost.cover}
                                         alt={highlights.latestPost.title}
+                                        loading="lazy"
                                         className="highlight-cover"
                                         style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                                     />
@@ -122,8 +123,9 @@ export default function IntroPage() {
                             >
                                 {highlights.mostViewedPost.cover && (
                                     <img
-                                        src={`http://localhost:4000/${highlights.mostViewedPost.cover}`}
+                                        src={highlights.mostViewedPost.cover}
                                         alt={highlights.mostViewedPost.title}
+                                        loading="lazy"
                                         className="highlight-cover"
                                         style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                                     />
