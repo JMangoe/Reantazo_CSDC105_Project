@@ -12,6 +12,8 @@ const cookieParser = require('cookie-parser');
 const multer = require ('multer');
 const fs = require('fs');
 const helmet = require('helmet');
+const cloudinary = require('./utils/cloudinary');
+
 
 const uploadsDir = __dirname + '/uploads';
 if (!fs.existsSync(uploadsDir)) {
@@ -128,31 +130,40 @@ app.post('/logout', (req,res) => {
 })
 
 app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
-    const {originalname, path} = req.file;
+    const { originalname, path } = req.file;
     const ext = originalname.split('.').pop().toLowerCase();
 
-    if (!allowedExtensions.includes(ext)) { //only accepts png, jpg, jpeg, gif
-        fs.unlinkSync(path);  // delete the temp uploaded file
-        return res.status(400).json({error: 'File type not allowed'});
+    if (!allowedExtensions.includes(ext)) {
+        fs.unlinkSync(path);
+        return res.status(400).json({ error: 'File type not allowed' });
     }
 
-    const newPath = path + '.' + ext;
-    fs.renameSync(path, newPath);
-
-    const {token} = req.cookies;
-    jwt.verify(token, secret, {}, async (err,info) => {
-        if (err) throw err;
-        const {title, summary, content} = req.body;
-        const postDoc = await Post.create({
-            title,
-            summary,
-            content,
-            cover: `https://broquote-backend.onrender.com/uploads/${newPath.split('/').pop()}`,
-            author:info.id,
+    try {
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(path, {
+            folder: "broquote_covers", // optional folder
+            use_filename: true,
         });
-        res.json(postDoc);  
-    });
 
+        fs.unlinkSync(path); // delete local file after upload
+
+        const { token } = req.cookies;
+        jwt.verify(token, secret, {}, async (err, info) => {
+            if (err) throw err;
+            const { title, summary, content } = req.body;
+            const postDoc = await Post.create({
+                title,
+                summary,
+                content,
+                cover: result.secure_url, // use Cloudinary URL
+                author: info.id,
+            });
+            res.json(postDoc);
+        });
+    } catch (err) {
+        console.error("Cloudinary upload error:", err);
+        res.status(500).json({ error: "Failed to upload image" });
+    }
 });
 
 app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
@@ -184,7 +195,17 @@ app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
         postDoc.summary = summary;
         postDoc.content = content;
         if (newPath) {
-            postDoc.cover = `https://broquote-backend.onrender.com/uploads/${newPath.split('/').pop()}`;
+            try {
+                const result = await cloudinary.uploader.upload(newPath, {
+                folder: "broquote_covers",
+                use_filename: true,
+                });
+                postDoc.cover = result.secure_url;
+                fs.unlinkSync(newPath); // remove the local file after upload
+            } catch (err) {
+                console.error("Cloudinary upload error (PUT):", err);
+                return res.status(500).json({ error: "Failed to upload new image" });
+            }
         }
 
         await postDoc.save();

@@ -6,7 +6,7 @@ export default function Post({_id, title, summary, cover, content, createdAt, au
     <div className="post fade-in">
         <div className="image">
             <Link to={`/post/${_id}`}>
-                <img src={cover} alt=""/>
+                <img src={cover} alt="" loading="lazy"/>
             </Link>
             
         </div>
