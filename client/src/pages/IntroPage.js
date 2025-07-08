@@ -99,7 +99,10 @@ export default function IntroPage() {
                                     }}>
                                         {highlights.latestPost.summary}
                                     </p>
-                                    <p style={{ fontStyle: 'italic', marginTop: '0.5rem' }}>by @{highlights.latestPost.author.username}</p>
+                                    <p style={{ fontStyle: 'italic', marginTop: '0.5rem' }}>
+                                        {highlights.latestPost.author ? `by @${highlights.latestPost.author.username}` : 'Author unknown'}
+                                    </p>
+
                                 </div>
                             </Link>
                         )}
@@ -141,7 +144,10 @@ export default function IntroPage() {
                                     }}>
                                         {highlights.mostViewedPost.summary}
                                     </p>
-                                    <p style={{ fontStyle: 'italic', marginTop: '0.5rem' }}>by @{highlights.mostViewedPost.author.username}</p>
+                                    <p style={{ fontStyle: 'italic', marginTop: '0.5rem' }}>
+                                        {highlights.mostViewedPost.author ? `by @${highlights.mostViewedPost.author.username}` : 'Author unknown'}
+                                    </p>
+
                                     <p>{highlights.mostViewedPost.views} views</p>
                                 </div>
                             </Link>
