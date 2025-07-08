@@ -15,11 +15,6 @@ const helmet = require('helmet');
 const cloudinary = require('./utils/cloudinary');
 
 
-const uploadsDir = __dirname + '/uploads';
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
-
 const uploadMiddleware = multer({ 
     dest: 'uploads/',
     limits: {
@@ -50,17 +45,15 @@ function requireAuth(req, res, next) {
     })
 }
 
-app.use(cors({credentials:true, 
-    origin: [
-        'http://localhost:3000', 
-        'https://broquote-essays.vercel.app']
+app.use(cors({
+    credentials:true, 
+    origin: ['http://localhost:3000', process.env.CLIENT_ORIGIN]
     }));
 app.use(express.json());
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 app.use(cookieParser());
-app.use('/uploads', express.static(__dirname + '/uploads'));
 
 mongoose.connect(mongoURI)
   .then(() => console.log("✅ MongoDB connected"))
@@ -121,13 +114,23 @@ app.post('/login', async (req,res) => {
 
 });
 
-app.get('/profile', requireAuth, (req, res) => {
-    res.json(req.user);
+app.get('/profile', (req, res) => {
+    const { token } = req.cookies;
+    if (!token) return res.status(401).json(null);
+
+    jwt.verify(token, secret, {}, (err, user) => {
+        if (err) return res.status(403).json(null);
+        res.json(user);
+    });
 });
 
-app.post('/logout', (req,res) => {
-    res.cookie('token', '', { maxAge: 0 }).json('ok');
-})
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+  }).json({ message: "Logged out" });
+});
 
 app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
     const { originalname, path } = req.file;
@@ -220,16 +223,20 @@ app.put('/post', uploadMiddleware.single('file'), async(req,res) => {
 app.get('/post/highlights', async (req, res) => {
     try {
         const latestPost = await Post.findOne()
-            .populate('author', ['username'])
-            .sort({ createdAt: -1 })
-            .exec();
+        .populate('author', ['username'])
+        .sort({ createdAt: -1 });
 
-        const mostViewedPost = await Post.findOne()
-            .populate('author', ['username'])
-            .sort({ views: -1 })
-            .exec();
+        let mostViewedPost = await Post.findOne({ _id: { $ne: latestPost?._id } })
+        .populate('author', ['username'])
+        .sort({ views: -1 });
+
+        // If there’s no other post with different ID (e.g. only 1 post exists), fallback
+        if (!mostViewedPost && latestPost) {
+        mostViewedPost = latestPost;
+        }
 
         res.json({ latestPost, mostViewedPost });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch post highlights" });
@@ -280,10 +287,6 @@ app.delete('/post/:id', async(req,res) => {
 
         const isAuthor = post.author.toString() === info.id;
         if (!isAuthor) return res.status(403).json({error: 'You are not the author.'});
-
-        if (post.cover && fs.existsSync(post.cover)) {
-            fs.unlinkSync(post.cover);
-        }
 
         await Post.deleteOne({_id: req.params.id});
         res.json({ message: 'Post deleted successfully.'});
