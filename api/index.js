@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const multer = require ('multer');
 const fs = require('fs');
+const helmet = require('helmet');
 
 const uploadsDir = __dirname + '/uploads';
 if (!fs.existsSync(uploadsDir)) {
@@ -53,10 +54,15 @@ app.use(cors({credentials:true,
         'https://broquote-essays.vercel.app']
     }));
 app.use(express.json());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
-mongoose.connect(mongoURI);
+mongoose.connect(mongoURI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB connection error:", err));
 
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
