@@ -238,15 +238,20 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 
         const { token } = req.cookies;
         jwt.verify(token, secret, {}, async (err, info) => {
-            if (err) throw err;
+            if (err) return res.status(403).json({ error: 'Invalid token' });
+
+            const user = await User.findById(info.id);
+            if (!user) return res.status(401).json({ error: 'User not found' });
+
             const { title, summary, content } = req.body;
             const postDoc = await Post.create({
                 title,
                 summary,
                 content,
-                cover: result.secure_url, // use Cloudinary URL
-                author: info.id,
+                cover: result.secure_url,
+                author: user._id, // <- always use the MongoDB-confirmed ID
             });
+
             res.json(postDoc);
         });
     } catch (err) {
