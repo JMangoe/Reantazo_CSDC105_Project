@@ -12,6 +12,7 @@ export default function EditPost() {
     const [content, setContent] = useState('');
     const [files, setFiles] = useState('');
     const [redirect, setRedirect] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         async function fetchPost() {
@@ -45,11 +46,13 @@ export default function EditPost() {
         data.set('file', files[0]);
 
         try {
+            setLoading(true);
             const response = await fetch(`${API}/post`, {
                 method: 'PUT',
                 body: data,
                 credentials: 'include',
             });
+            setLoading(false);
 
             if (response.ok) {
                 toast.success("Post updated!");
@@ -59,6 +62,7 @@ export default function EditPost() {
                 toast.error(err?.error || "Failed to update post.");
             }
         } catch (err) {
+            setLoading(false);
             console.error(err);
             toast.error("Something went wrong.");
         }
@@ -71,13 +75,13 @@ export default function EditPost() {
     return (
         <form onSubmit={updatePost} className="fade-in">
             <input 
-                type="title" 
+                type="text" 
                 placeholder="Title" 
                 value={title} 
                 onChange={ev => setTitle(ev.target.value)} 
             />
             <input 
-                type="summary" 
+                type="text" 
                 placeholder="Summary"
                 value={summary} 
                 onChange={ev => setSummary(ev.target.value)} 
@@ -87,7 +91,12 @@ export default function EditPost() {
                 onChange={ev => setFiles(ev.target.files)} 
             />
             <Editor onChange={setContent} value={content} />
-            <button style={{marginTop: '5px'}}>Update post</button>
+            <button 
+                style={{marginTop: '5px'}} 
+                disabled={loading}
+            >
+                {loading ? 'Updating...' : 'Update post'}
+            </button>
         </form>
     );
 }
