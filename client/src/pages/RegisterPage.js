@@ -78,22 +78,21 @@ export default function RegisterPage() {
         required
       />
 
-      <div className="relative w-full">
+    <div className="password-wrapper">
         <input
-          type={showPassword ? "text" : "password"}
-          placeholder="Password"
-          value={password}
-          onChange={(ev) => setPassword(ev.target.value)}
-          className="w-full px-4 py-2 pr-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(ev) => setPassword(ev.target.value)}
+            required
         />
         <span
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
         >
-          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
         </span>
-      </div>
+    </div>
 
       <button
         type="submit"

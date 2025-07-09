@@ -1,20 +1,24 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react'; // added useContext
 import logo from '../assets/bro-quote-logo.png';
+import { LoadingContext } from '../LoadingContext'; // import the context
 
 const API = process.env.REACT_APP_API_URL;
 
 export default function IntroPage() {
     const [highlights, setHighlights] = useState(null);
+    const { setLoading } = useContext(LoadingContext);
 
     useEffect(() => {
+        setLoading(true);
         fetch(`${API}/post/highlights`)
             .then(res => res.json())
             .then(data => {
                 console.log("Highlights fetched:", data);
                 setHighlights(data);
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
     }, []);
 
     return (

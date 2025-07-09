@@ -8,7 +8,7 @@ export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const { setLoading } = useContext(LoadingContext); // 👈 Use the global context
+  const { loading, setLoading } = useContext(LoadingContext); // 👈 Use the global context
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -28,46 +28,49 @@ export default function IndexPage() {
       } catch (error) {
         console.error("Error fetching posts:", error);
       } finally {
-        setLoading(false); // ✅ Always hide loader
+        setLoading(false); 
       }
     };
 
     fetchPosts();
   }, [currentPage]);
 
-  return (
-    <>
-      {posts.length > 0 ? (
-        <>
-          {posts.map((post) => (
-            <Post 
-              key={post._id} 
-              {...post} 
-              likeCount={post.likeCount}
-              commentCount={post.commentCount}
-            />
-          ))}
+return (
+  <>
+    {loading ? (
+      // nothing needed here — FullScreenLoader will already be showing globally
+      null
+    ) : posts.length > 0 ? (
+      <>
+        {posts.map((post) => (
+          <Post 
+            key={post._id} 
+            {...post} 
+            likeCount={post.likeCount}
+            commentCount={post.commentCount}
+          />
+        ))}
 
-          {/* Pagination Controls */}
-          <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '2rem' }}>
-            <button 
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <span>Page {currentPage} of {totalPages}</span>
-            <button 
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      ) : (
-        <div>No posts found.</div>
-      )}
-    </>
-  );
+        {/* Pagination Controls */}
+        <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '2rem' }}>
+          <button 
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button 
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      </>
+    ) : (
+      <div>No posts found.</div>
+    )}
+  </>
+);
 }

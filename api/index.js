@@ -335,12 +335,26 @@ app.get('/post/highlights', async (req, res) => {
 });
 
 app.get('/post', async (req, res) => {
-    res.json(
-        await Post.find()
-            .populate('author', ['username'])
-            .sort({ createdAt: -1 })
-            .limit(20)
-    );
+    //pagination stuff
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
+    try {
+    const totalPosts = await Post.countDocuments();
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const posts = await Post.find()
+        .populate('author', ['username'])
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    res.json({ posts, totalPages });
+    } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch posts" });
+    }
 });
 
 app.get('/post/:id', async (req, res) => {
