@@ -339,24 +339,43 @@ app.get('/post', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
+    const search = req.query.search || "";
 
     try {
-    const totalPosts = await Post.countDocuments();
-    const totalPages = Math.ceil(totalPosts / limit);
+        // Fetch all posts and populate author
+        let query = Post.find()
+            .populate('author', ['username']);
 
-    const posts = await Post.find()
-        .populate('author', ['username'])
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
+        // Filter by search (title or author username)
+        if (search) {
+            const searchRegex = new RegExp(search, 'i');
+            query = query.or([
+                { title: searchRegex },
+                { 'author.username': searchRegex }
+            ]);
+        }
 
-    const postsWithCounts = posts.map(post => ({
-        ...post.toObject(),
-        likeCount: post.likes ? post.likes.length : 0,
-        commentCount: post.comments ? post.comments.length : 0,
-    }));
+        const countQuery = query.clone();
+        const totalPosts = await Post.countDocuments(query);
+        const totalPages = Math.ceil(totalPosts / limit);
 
-    res.json({ posts, totalPages });
+        const posts = await query
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        // Paginate after filtering
+        const paginatedPosts = posts.slice(skip, skip + limit);
+
+        // Add likeCount and commentCount
+        const postsWithCounts = paginatedPosts.map(post => ({
+            ...post.toObject(),
+            likeCount: post.likes ? post.likes.length : 0,
+            commentCount: post.comments ? post.comments.length : 0,
+        }));
+
+        res.json({ posts: postsWithCounts, totalPages });
     } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch posts" });
