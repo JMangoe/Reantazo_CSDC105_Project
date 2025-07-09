@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import logo from './assets/bro-quote-logo.png';
+import { toast } from "react-hot-toast";
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -18,11 +19,13 @@ export default function Header() {
     }, []);
 
 function logout() {
-    fetch (`${API}/logout`, {
-        credentials: 'include',
-        method: 'POST',
+    fetch(`${API}/logout`, {
+        method: "POST",
+        credentials: "include",
+    }).then(() => {
+        setUserInfo(null);
+        toast.success("Logged out successfully 👋");
     });
-    setUserInfo(null);
 }
 
 const username = userInfo?.username;

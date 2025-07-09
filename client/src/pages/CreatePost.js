@@ -14,6 +14,8 @@ export default function CreatePost() {
     const [content,setContent] = useState('');
     const [files, setFiles] = useState('');
     const [redirect,setRedirect] = useState(false);
+    const [loading, setLoading] = useState(false);
+
     async function createNewPost(ev) {
         const data = new FormData();
         data.set('title', title);
@@ -26,17 +28,26 @@ export default function CreatePost() {
             return;
         }
 
+        setLoading(true);
+
         const response = await fetch(`${API}/post`, {
             method: 'POST',
             body: data, 
             credentials: 'include',
         });
+
+        setLoading(false);
+
         if (response.ok) {
             toast.success("Post created successfully!");
             setRedirect(true);
         } else {
-            const err = await response.json();
-            toast.error(err?.error || "Failed to create post.");
+            try {
+                const err = await response.json();
+                toast.error(err?.error || "Failed to create post.");
+            } catch {
+                toast.error("Unexpected error occurred.");
+            }
         }
     }
 
@@ -47,18 +58,23 @@ export default function CreatePost() {
 
     return (
         <form onSubmit={createNewPost} className="fade-in">
-            <input type="title" 
+            <input type="text" 
                     placeholder={'Title'} 
                     value={title} 
                     onChange={ev => setTitle(ev.target.value)} />
-            <input type="summary" 
+            <input type="text" 
                     placeholder={'Summary'}
                     value={summary} 
                     onChange={ev => setSummary(ev.target.value)} />
             <input type="file"
                     onChange={ev => setFiles(ev.target.files)} />
             <Editor onChange={setContent} value={content}/>
-            <button style={{marginTop:'5px'}}>Create post</button>
+            <button 
+                style={{ marginTop: '5px' }} 
+                disabled={loading}
+            >
+                {loading ? 'Posting...' : 'Create post'}
+            </button>
         </form> 
     );
 }

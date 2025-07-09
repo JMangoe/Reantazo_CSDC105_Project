@@ -42,9 +42,6 @@ export default function IntroPage() {
             >
                 <img src={logo} alt="BroQuote Logo" className="intro-logo" style={{ maxWidth: '180px', marginBottom: '1rem' }} />
                 <h1>Welcome to BroQuote Essays</h1>
-                 <div className="bg-red-500 text-white p-4 text-xl">
-                Tailwind is working! 🔥
-                </div>
                 <p>Write. Reflect. Rebuild.</p>
                 <Link to="/blogs" className='btn main-btn' style={{ marginTop: '1rem' }}>Enter Essays</Link>
 
