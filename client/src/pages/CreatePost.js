@@ -3,6 +3,8 @@ import 'react-quill/dist/quill.snow.css';
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import Editor from "../Editor";
+import { toast } from "react-hot-toast";
+
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -20,7 +22,7 @@ export default function CreatePost() {
         data.set('file', files[0]);
         ev.preventDefault();
         if (!files || !files[0]) {
-            alert("Cover photo is required!");
+            toast.error("Cover photo is required!");
             return;
         }
 
@@ -29,8 +31,12 @@ export default function CreatePost() {
             body: data, 
             credentials: 'include',
         });
-        if (response.ok){
+        if (response.ok) {
+            toast.success("Post created successfully!");
             setRedirect(true);
+        } else {
+            const err = await response.json();
+            toast.error(err?.error || "Failed to create post.");
         }
     }
 

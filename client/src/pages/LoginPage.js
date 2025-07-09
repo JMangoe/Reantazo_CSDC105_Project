@@ -3,6 +3,8 @@ import { Navigate, Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { GoogleLogin } from "@react-oauth/google";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-hot-toast";
+
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -30,9 +32,10 @@ export default function LoginPage() {
     if (response.ok) {
       const userInfo = await response.json();
       setUserInfo(userInfo);
+      toast.success("Logged in successfully!");
       setRedirect(true);
     } else {
-      alert("Wrong credentials.");
+      toast.error("Wrong credentials. Try again.");
     }
   }
 
@@ -50,14 +53,15 @@ export default function LoginPage() {
       if (response.ok) {
         const userInfo = await response.json();
         setUserInfo(userInfo);
+        toast.success("Google login successful!");
         setRedirect(true);
       } else {
-        alert("Google login failed.");
+        toast.error("Google login failed.");
       }
     } catch (err) {
       console.error(err);
       setLoading(false);
-      alert("An error occurred during Google login.");
+      toast.error("An error occurred. Try again.");
     }
   }
 

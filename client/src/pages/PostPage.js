@@ -2,6 +2,7 @@ import { getSmartDate } from "../utils/formatDate";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import { toast } from "react-hot-toast";
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -65,18 +66,18 @@ export default function Postpage() {
         });
 
         if (response.ok) {
-            alert("Post deleted!");
+            toast.success("Post deleted!");
             navigate('/blogs');
         } else {
             const data = await response.json();
-            alert(`Error: ${data.error}`);
+            toast.error(`Error: ${data.error}`);
         }
     }
 
     // Like/unlike post function
     async function handleLike() {
         if (!userInfo) {
-            alert('You need to login to like posts');
+            toast.error("Login required to like posts.");
             return;
         }
 
@@ -101,12 +102,12 @@ export default function Postpage() {
     async function handleCommentSubmit(e) {
         e.preventDefault();
         if (!userInfo) {
-            alert('You need to login to comment');
+            toast.error("Login required to comment.");
             return;
         }
 
         if (!commentContent.trim()) {
-            alert('Comment cannot be empty');
+            toast.error("Comment cannot be empty.");
             return;
         }
 
@@ -123,9 +124,10 @@ export default function Postpage() {
             const newComment = await response.json();
             setComments([...comments, newComment]);
             setCommentContent("");
+            toast.success("Comment posted!");
         } else {
             const data = await response.json();
-            alert(`Error: ${data.error}`);
+            toast.error(`Error: ${data.error}`);
         }
     }
 
@@ -141,9 +143,10 @@ export default function Postpage() {
 
         if (response.ok) {
             setComments(comments.filter(comment => comment._id !== commentId));
+            toast.success("Comment deleted!");
         } else {
             const data = await response.json();
-            alert(`Error: ${data.error}`);
+            toast.error(`Error: ${data.error}`);
         }
     }
 
@@ -229,5 +232,3 @@ export default function Postpage() {
         </div>
     );
 }
-
-//finished/stopped at 3:02:32 / 3:32:09

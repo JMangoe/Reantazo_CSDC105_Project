@@ -2,6 +2,8 @@ import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-hot-toast";
+
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -16,10 +18,8 @@ export default function RegisterPage() {
     ev.preventDefault();
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,20}$/;
     if (!passwordRegex.test(password)) {
-      alert(
-        "Password must be 8-20 characters, include at least 1 uppercase letter, 1 number, and 1 special character."
-      );
-      return;
+        toast.error("Password must be 8-20 chars, 1 uppercase, 1 number, 1 symbol.");
+        return;
     }
 
     setLoading(true);
@@ -32,10 +32,10 @@ export default function RegisterPage() {
     setLoading(false);
 
     if (response.ok) {
-      alert("Registration successful!");
+      toast.success("Account created!");
       navigate("/");
     } else {
-      alert("Registration failed.");
+      toast.error("Registration failed.");
     }
   }
 
@@ -51,14 +51,15 @@ export default function RegisterPage() {
       setLoading(false);
 
       if (response.ok) {
+        toast.success("Google account registered!");
         navigate("/");
       } else {
-        alert("Google registration/login failed.");
+        toast.error("Google signup failed.");
       }
     } catch (err) {
       console.error(err);
       setLoading(false);
-      alert("An error occurred.");
+      toast.error("Something went wrong. Try again.");
     }
   }
 

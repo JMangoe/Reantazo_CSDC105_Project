@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import Post from "../Post";
 import { LoadingContext } from "../LoadingContext"; // 👈 Import global loader
+import { toast } from "react-hot-toast";
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -27,6 +28,7 @@ export default function IndexPage() {
         setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Error fetching posts:", error);
+        toast.error("Failed to load posts. Please try again.");
       } finally {
         setLoading(false); 
       }

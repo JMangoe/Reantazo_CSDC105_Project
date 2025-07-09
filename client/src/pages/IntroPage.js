@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState, useContext } from 'react'; // added useContext
 import logo from '../assets/bro-quote-logo.png';
 import { LoadingContext } from '../LoadingContext'; // import the context
+import { toast } from 'react-hot-toast';
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -17,7 +18,10 @@ export default function IntroPage() {
                 console.log("Highlights fetched:", data);
                 setHighlights(data);
             })
-            .catch(err => console.error(err))
+            .catch(err => {
+                console.error(err);
+                toast.error("Failed to load highlights.");
+            })
             .finally(() => setLoading(false));
     }, []);
 
@@ -38,6 +42,9 @@ export default function IntroPage() {
             >
                 <img src={logo} alt="BroQuote Logo" className="intro-logo" style={{ maxWidth: '180px', marginBottom: '1rem' }} />
                 <h1>Welcome to BroQuote Essays</h1>
+                 <div className="bg-red-500 text-white p-4 text-xl">
+                Tailwind is working! 🔥
+                </div>
                 <p>Write. Reflect. Rebuild.</p>
                 <Link to="/blogs" className='btn main-btn' style={{ marginTop: '1rem' }}>Enter Essays</Link>
 

@@ -12,12 +12,14 @@ import Postpage from './pages/PostPage';
 import EditPost from './pages/EditPost';
 import IntroPage from './pages/IntroPage';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Toaster } from 'react-hot-toast';
 
 
 
 function App() {
   return (
     <GoogleOAuthProvider clientId="643640226376-phju3rdc9eqhgt0gg5tlrrk6ktt1nrbd.apps.googleusercontent.com">
+    <Toaster position="top-center" reverseOrder={false}/>
       <UserContextProvider>
         <Routes>
 
