@@ -350,6 +350,12 @@ app.get('/post', async (req, res) => {
         .skip(skip)
         .limit(limit);
 
+    const postsWithCounts = posts.map(post => ({
+        ...post.toObject(),
+        likeCount: post.likes ? post.likes.length : 0,
+        commentCount: post.comments ? post.comments.length : 0,
+    }));
+
     res.json({ posts, totalPages });
     } catch (err) {
     console.error(err);
