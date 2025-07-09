@@ -8,16 +8,13 @@ export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState("");
   const { loading, setLoading } = useContext(LoadingContext); // 👈 Use the global context
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true); // ⏳ Show global loading
-        const res = await fetch(
-          `${API}/post?page=${currentPage}&limit=5&search=${encodeURIComponent(search)}`
-        );
+        const res = await fetch(`${API}/post?page=${currentPage}&limit=5`);
         const data = await res.json();
 
         const postsWithCounts = data.posts.map(post => ({
@@ -36,22 +33,10 @@ export default function IndexPage() {
     };
 
     fetchPosts();
-  }, [currentPage, search]);
+  }, [currentPage]);
 
 return (
   <>
-    <div style={{ marginBottom: "1.5rem" }}>
-        <input
-          type="text"
-          placeholder="Search by title or author..."
-          value={search}
-          onChange={e => {
-            setSearch(e.target.value);
-            setCurrentPage(1); // Reset to first page on new search
-          }}
-          style={{ padding: "0.5rem", width: "100%", maxWidth: "400px" }}
-        />
-      </div>
     {loading ? (
       // nothing needed here — FullScreenLoader will already be showing globally
       null

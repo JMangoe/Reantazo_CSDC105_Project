@@ -339,7 +339,6 @@ app.get('/post', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
-    const search = req.query.search || "";
 
     try {
     const totalPosts = await Post.countDocuments();
@@ -351,23 +350,13 @@ app.get('/post', async (req, res) => {
         .skip(skip)
         .limit(limit);
 
-    if (search) {
-            const searchLower = search.toLowerCase();
-            posts = posts.filter(post =>
-                post.title.toLowerCase().includes(searchLower) ||
-                (post.author?.username?.toLowerCase().includes(searchLower))
-            );
-        }
-
-    const paginatedPosts = posts.slice(skip, skip + limit);
-
-    const postsWithCounts = paginatedPosts.map(post => ({
+    const postsWithCounts = posts.map(post => ({
         ...post.toObject(),
         likeCount: post.likes ? post.likes.length : 0,
         commentCount: post.comments ? post.comments.length : 0,
     }));
 
-    res.json({ posts: postsWithCounts, totalPages });
+    res.json({ posts, totalPages });
     } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch posts" });
