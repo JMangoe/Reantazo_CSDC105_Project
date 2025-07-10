@@ -204,8 +204,8 @@ return (
         <div className="fade-in" style={{ backgroundColor: '#fdfdfd', padding: '4rem 2rem', textAlign: 'left', maxWidth: '900px', margin: '0 auto' }}>
         <h2 style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>What is BroQuote Essays?</h2>
         <p style={{ fontSize: '1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
-            <strong>BroQuote</strong> (@bro._.quote) started on Instagram to post powerful quotes with a raw, masculine tone.  
-            9 months later, it’s grown into a mindset platform — and now, a digital journal of self-growth through essays.
+            <strong>BroQuote</strong> (@bro._.quote) started on Instagram to share amazing quotes for people to love, ponder, and be inspired by.  
+            Nine months later, it’s grown into a helpful platform — and now, a digital journal of self-growth through essays.
         </p>
         <p style={{ fontSize: '1rem', lineHeight: '1.6' }}>
             This website is for reflection, discipline, healing, ambition, and everything in between.
