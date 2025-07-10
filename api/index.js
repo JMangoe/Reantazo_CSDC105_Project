@@ -347,10 +347,10 @@ app.get('/post', async (req, res) => {
         let filter = {};
 
         if (title || author) {
-            let andFilters = [];
+            let orFilters = [];
 
             if (title) {
-                andFilters.push({ $text: { $search: title } });
+                orFilters.push({ title: { $regex: title, $options: 'i' } });
             }
 
             if (author) {
@@ -358,14 +358,14 @@ app.get('/post', async (req, res) => {
                 const users = await User.find({ username: { $regex: author, $options: 'i' } });
                 if (users.length > 0) {
                     const userIds = users.map(user => user._id);
-                    andFilters.push({ author: { $in: userIds } });
+                    orFilters.push({ author: { $in: userIds } });
                 } else {
                     // If no matching authors found, return empty result
                     return res.json({ posts: [], totalPages: 0 });
                 }
             }
 
-            filter = { $and: andFilters };
+            filter = { $or: orFilters };
         }
 
         const totalPosts = await Post.countDocuments(filter);

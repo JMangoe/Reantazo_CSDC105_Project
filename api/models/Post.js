@@ -14,8 +14,6 @@ const PostSchema = new Schema ({
     timestamps: true,
 });
 
-PostSchema.index({ title: 'text' });
-
 const PostModel = model('Post', PostSchema);
 
 module.exports = PostModel;
