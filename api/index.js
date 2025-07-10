@@ -340,26 +340,46 @@ app.get('/post', async (req, res) => {
     const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
 
+    const { title, author } = req.query;
+
     try {
-    const totalPosts = await Post.countDocuments();
-    const totalPages = Math.ceil(totalPosts / limit);
+        // Build filter object
+        let filter = {};
 
-    const posts = await Post.find()
-        .populate('author', ['username'])
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
+        if (title) {
+            filter.title = { $regex: title, $options: 'i' }; // case-insensitive regex search
+        }
 
-    const postsWithCounts = posts.map(post => ({
-        ...post.toObject(),
-        likeCount: post.likes ? post.likes.length : 0,
-        commentCount: post.comments ? post.comments.length : 0,
-    }));
+        if (author) {
+            // Find user by username
+            const user = await User.findOne({ username: author });
+            if (user) {
+                filter.author = user._id;
+            } else {
+                // If author not found, return empty result
+                return res.json({ posts: [], totalPages: 0 });
+            }
+        }
 
-    res.json({ posts, totalPages });
+        const totalPosts = await Post.countDocuments(filter);
+        const totalPages = Math.ceil(totalPosts / limit);
+
+        const posts = await Post.find(filter)
+            .populate('author', ['username'])
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const postsWithCounts = posts.map(post => ({
+            ...post.toObject(),
+            likeCount: post.likes ? post.likes.length : 0,
+            commentCount: post.comments ? post.comments.length : 0,
+        }));
+
+        res.json({ posts, totalPages });
     } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch posts" });
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch posts" });
     }
 });
 
