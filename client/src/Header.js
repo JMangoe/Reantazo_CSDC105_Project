@@ -4,11 +4,11 @@ import { UserContext } from "./UserContext";
 import logo from './assets/bro-quote-logo.png';
 import { toast } from "react-hot-toast";
 
-const API = process.env.REACT_APP_API_URL;
+const API = process.env.REACT_APP_API_URL; 
 
 export default function Header() {
     const { setUserInfo, userInfo } = useContext(UserContext);
-    const navigate = useNavigate(); // <-- Added for navigation
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         fetch(`${API}/profile`, {
@@ -27,7 +27,7 @@ export default function Header() {
         }).then(() => {
             setUserInfo(null);
             toast.success("Logged out successfully 👋");
-            navigate("/"); // <-- Redirect to homepage after logout
+            navigate("/"); 
         });
     }
 
@@ -45,15 +45,15 @@ export default function Header() {
             <nav className="fade-in">
                 {username && (
                     <>
-                        <span>Welcome, {username} </span>
-                        <Link to="/create">Create new post</Link>
-                        <a onClick={logout}>Logout</a>
+                        <span className="welcome-button">Welcome, {username} </span>
+                        <Link to="/create" className="nav-button">Post</Link>
+                        <a className="nav-button" onClick={logout}>Logout</a>
                     </>
                 )}
                 {!username && (
                     <>
-                        <Link to="/login">Login</Link>
-                        <Link to="/register">Register</Link>
+                        <Link to="/login" className="nav-button">Login</Link>
+                        <Link to="/register" className="nav-button">Register</Link>
                     </>
                 )}
             </nav>
