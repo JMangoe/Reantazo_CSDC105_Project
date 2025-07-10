@@ -9,8 +9,7 @@ export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchTitle, setSearchTitle] = useState('');
-  const [searchAuthor, setSearchAuthor] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [inputValue, setInputValue] = useState('');
   const { loading, setLoading } = useContext(LoadingContext); // 👈 Use the global context
 
@@ -22,11 +21,10 @@ export default function IndexPage() {
           page: currentPage,
           limit: 5,
         });
-        if (searchTitle) {
-          queryParams.append('title', searchTitle);
-        }
-        if (searchAuthor) {
-          queryParams.append('author', searchAuthor);
+        if (searchQuery) {
+          // Send the same query for both title and author filtering
+          queryParams.append('title', searchQuery);
+          queryParams.append('author', searchQuery);
         }
         const res = await fetch(`${API}/post?${queryParams.toString()}`);
         const data = await res.json();
@@ -48,7 +46,7 @@ export default function IndexPage() {
     };
 
     fetchPosts();
-  }, [currentPage, searchTitle, searchAuthor]);
+  }, [currentPage, searchQuery]);
 
   const handleSearchClick = () => {
     setCurrentPage(1);
