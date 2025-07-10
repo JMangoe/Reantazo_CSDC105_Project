@@ -385,7 +385,7 @@ app.get('/post', async (req, res) => {
 
         res.json({ posts, totalPages });
     } catch (err) {
-        console.error(err);
+        console.error("🔥 Error in /post:", err);
         res.status(500).json({ error: "Failed to fetch posts" });
     }
 });
