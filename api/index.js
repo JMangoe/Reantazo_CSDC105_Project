@@ -340,53 +340,26 @@ app.get('/post', async (req, res) => {
     const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
 
-    const { title, author } = req.query;
-
     try {
-        // Build filter object
-        let filter = {};
+    const totalPosts = await Post.countDocuments();
+    const totalPages = Math.ceil(totalPosts / limit);
 
-        if (title || author) {
-            let orFilters = [];
+    const posts = await Post.find()
+        .populate('author', ['username'])
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
 
-            if (title) {
-                orFilters.push({ title: { $regex: title, $options: 'i' } });
-            }
+    const postsWithCounts = posts.map(post => ({
+        ...post.toObject(),
+        likeCount: post.likes ? post.likes.length : 0,
+        commentCount: post.comments ? post.comments.length : 0,
+    }));
 
-            if (author) {
-                // Find users by username regex (case-insensitive)
-                const users = await User.find({ username: { $regex: author, $options: 'i' } });
-                if (users.length > 0) {
-                    const userIds = users.map(user => user._id);
-                    orFilters.push({ author: { $in: userIds } });
-                } else {
-                    // If no matching authors found, return empty result
-                    return res.json({ posts: [], totalPages: 0 });
-                }
-            }
-
-            filter = { $or: orFilters };
-        }
-
-        const totalPosts = await Post.countDocuments(filter);
-        const totalPages = Math.ceil(totalPosts / limit);
-
-        const posts = await Post.find(filter)
-            .populate('author', ['username'])
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        const postsWithCounts = posts.map(post => ({
-            ...post.toObject(),
-            likeCount: post.likes ? post.likes.length : 0,
-            commentCount: post.comments ? post.comments.length : 0,
-        }));
-
-        res.json({ posts, totalPages });
+    res.json({ posts, totalPages });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to fetch posts" });
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch posts" });
     }
 });
 
