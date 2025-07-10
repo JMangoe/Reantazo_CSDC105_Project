@@ -351,12 +351,13 @@ app.get('/post', async (req, res) => {
         }
 
         if (author) {
-            // Find user by username
-            const user = await User.findOne({ username: author });
-            if (user) {
-                filter.author = user._id;
+            // Find users by username regex (case-insensitive)
+            const users = await User.find({ username: { $regex: author, $options: 'i' } });
+            if (users.length > 0) {
+                const userIds = users.map(user => user._id);
+                filter.author = { $in: userIds };
             } else {
-                // If author not found, return empty result
+                // If no matching authors found, return empty result
                 return res.json({ posts: [], totalPages: 0 });
             }
         }

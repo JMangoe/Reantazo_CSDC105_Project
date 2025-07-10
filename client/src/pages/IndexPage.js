@@ -9,8 +9,7 @@ export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchTitle, setSearchTitle] = useState('');
-  const [searchAuthor, setSearchAuthor] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const { loading, setLoading } = useContext(LoadingContext); // 👈 Use the global context
 
   useEffect(() => {
@@ -21,11 +20,10 @@ export default function IndexPage() {
           page: currentPage,
           limit: 5,
         });
-        if (searchTitle) {
-          queryParams.append('title', searchTitle);
-        }
-        if (searchAuthor) {
-          queryParams.append('author', searchAuthor);
+        if (searchQuery) {
+          // Send the same query for both title and author filtering
+          queryParams.append('title', searchQuery);
+          queryParams.append('author', searchQuery);
         }
         const res = await fetch(`${API}/post?${queryParams.toString()}`);
         const data = await res.json();
@@ -47,24 +45,28 @@ export default function IndexPage() {
     };
 
     fetchPosts();
-  }, [currentPage, searchTitle, searchAuthor]);
+  }, [currentPage, searchQuery]);
 
   return (
     <>
-      <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+      <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
         <input
           type="text"
-          placeholder="Search by title"
-          value={searchTitle}
-          onChange={e => setSearchTitle(e.target.value)}
-          style={{ padding: '0.5rem', width: '200px' }}
-        />
-        <input
-          type="text"
-          placeholder="Search by author"
-          value={searchAuthor}
-          onChange={e => setSearchAuthor(e.target.value)}
-          style={{ padding: '0.5rem', width: '200px' }}
+          placeholder="Search by title or author"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          style={{
+            padding: '0.5rem 1rem',
+            width: '300px',
+            borderRadius: '20px',
+            border: '1px solid #ccc',
+            boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+            fontSize: '1rem',
+            outline: 'none',
+            transition: 'border-color 0.3s ease',
+          }}
+          onFocus={e => e.target.style.borderColor = '#007bff'}
+          onBlur={e => e.target.style.borderColor = '#ccc'}
         />
       </div>
 
