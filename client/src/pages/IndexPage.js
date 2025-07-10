@@ -49,7 +49,7 @@ export default function IndexPage() {
 
   return (
     <>
-      <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <input
           type="text"
           placeholder="Search by title or author"
@@ -58,16 +58,36 @@ export default function IndexPage() {
           style={{
             padding: '0.5rem 1rem',
             width: '300px',
-            borderRadius: '20px',
+            borderRadius: '20px 0 0 20px',
             border: '1px solid #ccc',
             boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
             fontSize: '1rem',
             outline: 'none',
             transition: 'border-color 0.3s ease',
+            borderRight: 'none',
           }}
           onFocus={e => e.target.style.borderColor = '#007bff'}
           onBlur={e => e.target.style.borderColor = '#ccc'}
         />
+        <div style={{
+          width: '40px',
+          height: '36px',
+          backgroundColor: '#f0f0f0',
+          border: '1px solid #ccc',
+          borderRadius: '0 20px 20px 0',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+          cursor: 'pointer',
+          transition: 'background-color 0.3s ease',
+        }}
+        onMouseDown={e => e.preventDefault()}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" fill="#666" viewBox="0 0 24 24">
+            <path d="M21 20l-5.6-5.6a7 7 0 1 0-1.4 1.4L20 21zM10 16a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/>
+          </svg>
+        </div>
       </div>
 
       {loading ? (

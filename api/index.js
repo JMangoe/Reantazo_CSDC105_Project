@@ -346,20 +346,26 @@ app.get('/post', async (req, res) => {
         // Build filter object
         let filter = {};
 
-        if (title) {
-            filter.title = { $regex: title, $options: 'i' }; // case-insensitive regex search
-        }
+        if (title || author) {
+            let orFilters = [];
 
-        if (author) {
-            // Find users by username regex (case-insensitive)
-            const users = await User.find({ username: { $regex: author, $options: 'i' } });
-            if (users.length > 0) {
-                const userIds = users.map(user => user._id);
-                filter.author = { $in: userIds };
-            } else {
-                // If no matching authors found, return empty result
-                return res.json({ posts: [], totalPages: 0 });
+            if (title) {
+                orFilters.push({ title: { $regex: title, $options: 'i' } });
             }
+
+            if (author) {
+                // Find users by username regex (case-insensitive)
+                const users = await User.find({ username: { $regex: author, $options: 'i' } });
+                if (users.length > 0) {
+                    const userIds = users.map(user => user._id);
+                    orFilters.push({ author: { $in: userIds } });
+                } else {
+                    // If no matching authors found, return empty result
+                    return res.json({ posts: [], totalPages: 0 });
+                }
+            }
+
+            filter = { $or: orFilters };
         }
 
         const totalPosts = await Post.countDocuments(filter);
