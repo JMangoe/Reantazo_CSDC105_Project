@@ -39,7 +39,7 @@ export default function Header() {
                 <Link to="/">
                     <img src={logo} alt="BroQuote Logo" className="logo-img" />
                 </Link>
-                <Link to="/blogs" className="logo">All Blogs</Link>
+                <Link to="/blogs" className="logo">All Essays</Link>
             </div>
 
             <nav className="fade-in">
