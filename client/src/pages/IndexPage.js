@@ -143,4 +143,8 @@ export default function IndexPage() {
       )}
     </>
   );
+<<<<<<< Updated upstream
 }  
+=======
+}  
+>>>>>>> Stashed changes
